@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Nomade — Guide de voyage IA</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast" class="toast"></div>
+
+<!-- AUDIO BAR -->
+<div id="audio-bar" class="audio-bar">
+  <div class="audio-waves">
+    <div class="audio-wave"></div>
+    <div class="audio-wave"></div>
+    <div class="audio-wave"></div>
+    <div class="audio-wave"></div>
+    <div class="audio-wave"></div>
+  </div>
+  <span id="audio-bar-name" style="flex:1; font-size:13px; color:var(--text);">En cours…</span>
+  <button id="btn-audio-stop" class="btn-stop-audio">⏹</button>
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN : ACCUEIL               -->
+<!-- ============================= -->
+<div id="screen-home" class="screen active">
+  <div class="home-hero">
+    <span class="logo-glyph">◈</span>
+    <h1 class="app-title">Nomade</h1>
+    <p class="app-sub">Ton guide privé · Partout</p>
+  </div>
+
+  <div class="home-form">
+
+    <!-- Réglages -->
+    <div style="display:flex; justify-content:flex-end; margin-bottom:-4px;">
+      <button id="btn-open-settings" class="btn-icon" style="background:transparent; border:none;">⚙️</button>
+    </div>
+
+    <!-- Destination -->
+    <div class="field">
+      <label>Destination</label>
+      <input type="text" id="input-destination" placeholder="Rome, Lisbonne, Kyoto…" autocomplete="off" inputmode="search">
+    </div>
+
+    <!-- Durée -->
+    <div class="field">
+      <label>Durée de visite</label>
+      <div class="select-wrap">
+        <select id="input-duration">
+          <option value="1">1 heure</option>
+          <option value="2" selected>2 heures</option>
+          <option value="3">3 heures</option>
+          <option value="4">Demi-journée (4h)</option>
+          <option value="6">Journée complète (6h)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Thème -->
+    <div class="field">
+      <label>Thème de la visite</label>
+      <div class="theme-grid">
+        <button class="theme-btn active" data-theme="histoire">
+          <span class="theme-icon">🏛️</span>
+          Histoire & culture
+        </button>
+        <button class="theme-btn" data-theme="gastro">
+          <span class="theme-icon">🍷</span>
+          Gastronomie locale
+        </button>
+        <button class="theme-btn" data-theme="mixte">
+          <span class="theme-icon">🗺️</span>
+          Mixte
+        </button>
+        <button class="theme-btn" data-theme="nature">
+          <span class="theme-icon">🌿</span>
+          Nature & points de vue
+        </button>
+      </div>
+    </div>
+
+    <!-- Format audio -->
+    <div class="field">
+      <label>Format du guide audio</label>
+      <div class="format-row">
+        <button class="format-btn active" data-format="dense">
+          ⚡ Court & dense
+        </button>
+        <button class="format-btn" data-format="narratif">
+          📖 Narratif & détaillé
+        </button>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button id="btn-generate" class="btn-generate">
+      Générer ma visite →
+    </button>
+
+    <!-- Historique -->
+    <div class="field" style="margin-top:8px;">
+      <label>Visites précédentes</label>
+      <div id="history-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN : CHARGEMENT            -->
+<!-- ============================= -->
+<div id="screen-loading" class="screen">
+  <div class="loading-glyph">◈</div>
+  <div class="loading-title">Préparation de ta visite</div>
+  <div class="loading-sub">Claude analyse la destination et sélectionne les meilleurs lieux</div>
+  <div class="loading-steps">
+    <div class="loading-step" id="step-0">
+      <div class="step-dot"></div>
+      <span>Localisation de la destination</span>
+    </div>
+    <div class="loading-step" id="step-1">
+      <div class="step-dot"></div>
+      <span>Sélection des points d'intérêt</span>
+    </div>
+    <div class="loading-step" id="step-2">
+      <div class="step-dot"></div>
+      <span>Géolocalisation des lieux</span>
+    </div>
+    <div class="loading-step" id="step-3">
+      <div class="step-dot"></div>
+      <span>Préparation de la carte</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN : CARTE                 -->
+<!-- ============================= -->
+<div id="screen-map" class="screen">
+
+  <!-- Top bar -->
+  <div class="map-topbar">
+    <button id="btn-map-home" class="btn-icon">←</button>
+    <div class="map-title">
+      <div id="map-destination" class="map-destination">—</div>
+      <div id="map-meta" class="map-meta">—</div>
+    </div>
+    <button id="btn-locate" class="btn-icon">◎</button>
+    <button id="btn-map-settings" class="btn-icon">⚙️</button>
+  </div>
+
+  <!-- Carte Leaflet -->
+  <div id="map"></div>
+
+  <!-- Strip des POI (visible quand sheet fermée) -->
+  <div id="poi-strip" class="poi-strip"></div>
+
+  <!-- Sheet POI -->
+  <div id="poi-sheet" class="poi-sheet">
+    <div class="sheet-handle"></div>
+    <button id="btn-close-sheet" style="position:absolute; top:16px; right:16px; background:none; border:none; color:var(--text2); font-size:22px; cursor:pointer;">✕</button>
+    <div class="sheet-scroll">
+      <div id="poi-sheet-content"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN : CHAT                  -->
+<!-- ============================= -->
+<div id="screen-chat" class="screen">
+  <div class="chat-header">
+    <span id="chat-back" class="chat-back">←</span>
+    <div class="chat-header-info">
+      <div class="chat-header-title">Guide IA</div>
+      <div class="chat-header-sub" id="chat-poi-name">—</div>
+    </div>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-row">
+    <input type="text" class="chat-input" id="chat-input" placeholder="Pose ta question…" inputmode="text">
+    <button class="btn-send" id="btn-send-chat">↑</button>
+  </div>
+</div>
+
+<!-- ============================= -->
+<!-- ÉCRAN : RÉGLAGES              -->
+<!-- ============================= -->
+<div id="screen-settings" class="screen">
+  <div class="settings-header">
+    <span id="btn-settings-back" class="settings-back">←</span>
+    <h2 class="settings-title">Réglages</h2>
+  </div>
+
+  <div class="settings-body">
+
+    <div class="settings-section">
+      <h3>Clé API Claude (Anthropic)</h3>
+      <div class="settings-item">
+        <label>
+          Obtiens ta clé sur <strong>console.anthropic.com</strong> → API Keys.
+          Elle est stockée uniquement sur ton appareil.
+        </label>
+        <input type="password" id="input-api-key" placeholder="sk-ant-api03-…" autocomplete="off">
+        <div id="key-status" class="key-status missing">Clé API manquante</div>
+        <button id="btn-save-key" class="btn-save">Sauvegarder la clé</button>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Coût estimé</h3>
+      <div class="settings-item">
+        <label>
+          • Génération d'une visite (5-8 lieux) : ~0,02–0,05 €<br>
+          • Chat avec le guide (par échange) : ~0,001 €<br>
+          • Voix : gratuite (navigateur Web Speech API)<br><br>
+          <strong>Une journée de visite complète ≈ 0,10 €</strong>
+        </label>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Historique</h3>
+      <button id="btn-clear-history" class="btn-save" style="background:var(--bg3); color:var(--text2); border:1px solid var(--border);">
+        Effacer l'historique
+      </button>
+    </div>
+
+    <div class="settings-section">
+      <h3>Installer l'application</h3>
+      <div class="settings-item">
+        <label>
+          <strong>Android (Chrome)</strong><br>
+          Menu ⋮ → "Ajouter à l'écran d'accueil"<br><br>
+          <strong>iPhone (Safari)</strong><br>
+          Partager → "Sur l'écran d'accueil"
+        </label>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
