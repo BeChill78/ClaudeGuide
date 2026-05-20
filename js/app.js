@@ -270,7 +270,7 @@ RÈGLES STRICTES :
 
 ${formatInstr}
 
-Réponds UNIQUEMENT avec un objet JSON valide. N'utilise AUCUN bloc markdown, AUCUN ```json, AUCUNE explication avant ou après. Commence directement par { et termine par }.
+Réponds UNIQUEMENT avec un objet JSON valide. N'utilise AUCUN bloc markdown, AUCUN \`\`\`json, AUCUNE explication avant ou après. Commence directement par { et termine par }.
 {
   "pois": [
     {
