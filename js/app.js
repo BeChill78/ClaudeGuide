@@ -270,7 +270,7 @@ RÈGLES STRICTES :
 
 ${formatInstr}
 
-Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
+Réponds UNIQUEMENT avec un objet JSON valide. N'utilise AUCUN bloc markdown, AUCUN ```json, AUCUNE explication avant ou après. Commence directement par { et termine par }.
 {
   "pois": [
     {
@@ -295,7 +295,7 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 4000,
+        max_tokens: 8000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
@@ -306,13 +306,20 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
     }
 
     const data = await response.json();
-    const text = data.content[0].text.trim();
+    const raw = data.content[0].text
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/i, '')
+      .trim();
 
-    // Parse JSON robuste
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Réponse IA invalide');
-    const parsed = JSON.parse(jsonMatch[0]);
-    return parsed.pois;
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Réponse IA invalide — aucun JSON détecté');
+    try {
+      const parsed = JSON.parse(jsonMatch[0]);
+      return parsed.pois;
+    } catch (e) {
+      console.error('JSON brut reçu :', jsonMatch[0]);
+      throw new Error('Réponse IA malformée — réessaie ou réduis la durée de visite');
+    }
   },
 
   // ============================================================
