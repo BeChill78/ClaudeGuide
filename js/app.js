@@ -650,7 +650,7 @@ function renderMarkers() {
   S.pois.forEach((p, i) => {
     const icon = L.divIcon({
       className: '',
-      html: `<div class="map-pin${p.is_meal ? ' meal-pin' : ''}">${i + 1}</div>`,
+      html: `<div class="poi-marker${p.is_meal ? ' meal' : ''}">${i + 1}</div>`,
       iconSize: [32, 32],
       iconAnchor: [16, 32],
     });
@@ -685,7 +685,7 @@ function renderPoiStrip() {
         <span class="chip-num">${i + 1}</span>
         ${p.is_meal ? '<span style="font-size:11px">🍽️</span>' : ''}
       </div>
-      <span class="chip-name">${p.name}</span>
+      <span class="chip-label">${p.name}</span>
       <span class="chip-dist" id="chip-dist-${i}">—</span>
     `;
     chip.addEventListener('click', () => selectPOI(i));
@@ -732,18 +732,18 @@ function renderPoiSheet(p, index) {
   const escapedName = (p.name || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'");
 
   document.getElementById('poi-sheet-content').innerHTML = `
-    <div class="sheet-title">${p.is_meal ? '🍽️ ' : ''}${p.name || ''}</div>
+    <div class="poi-name">${p.is_meal ? '🍽️ ' : ''}${p.name || ''}</div>
     ${p.heure_passage ? `<div class="poi-time">🕐 Passage : ${p.heure_passage}</div>` : ''}
     ${p.duration ? `<div class="poi-time">⏱ Durée : ${fmtTime(p.duration)}</div>` : ''}
-    <div class="sheet-desc">${p.description || ''}</div>
-    ${p.conseil_local ? `<div class="sheet-tip">💡 ${p.conseil_local}</div>` : ''}
-    ${p.meilleur_moment ? `<div class="sheet-tip">🌅 ${p.meilleur_moment}</div>` : ''}
-    ${p.affluence ? `<div class="sheet-tip">👥 Affluence : ${p.affluence}</div>` : ''}
-    ${tags ? `<div class="sheet-tags">${tags}</div>` : ''}
+    <div class="poi-description">${p.description || ''}</div>
+    ${p.conseil_local ? `<div class="poi-tip">💡 ${p.conseil_local}</div>` : ''}
+    ${p.meilleur_moment ? `<div class="poi-tip">🌅 ${p.meilleur_moment}</div>` : ''}
+    ${p.affluence ? `<div class="poi-tip">👥 Affluence : ${p.affluence}</div>` : ''}
+    ${tags ? `<div class="poi-tags">${tags}</div>` : ''}
     ${distToNext}
-    <div class="sheet-actions">
-      <button class="btn-audio-sheet" onclick="playCurrentPoiAudio(${index})">▶ Audio</button>
-      <button class="btn-chat-sheet" onclick="openChat(${index})">💬 Chat</button>
+    <div class="poi-actions">
+      <button class="btn-audio" onclick="playCurrentPoiAudio(${index})">▶ Audio</button>
+      <button class="btn-chat" onclick="openChat(${index})">💬 Chat</button>
       <button class="btn-visited" onclick="markVisited(${index})">✓ Visité</button>
     </div>
   `;
@@ -868,8 +868,11 @@ function openChat(poiIndex) {
 function appendChatMsg(role, text) {
   const msgs = document.getElementById('chat-messages');
   const div = document.createElement('div');
-  div.className = 'chat-msg ' + role;
-  div.textContent = text;
+  div.className = 'msg ' + role;
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  bubble.textContent = text;
+  div.appendChild(bubble);
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -934,11 +937,11 @@ function renderHistory() {
   const list = document.getElementById('history-list');
   if (!list) return;
   const h = loadHistory();
-  if (!h.length) { list.innerHTML = '<div class="history-empty">Aucune visite enregistrée</div>'; return; }
+  if (!h.length) { list.innerHTML = '<div class="empty-state">Aucune visite enregistrée</div>'; return; }
   list.innerHTML = h.map(item => `
     <div class="history-item" data-dest="${item.dest}">
-      <span class="hist-dest">${item.dest}</span>
-      <span class="hist-meta">${item.poiCount} lieu${item.poiCount > 1 ? 'x' : ''} · ${item.date}</span>
+      <span class="history-dest">${item.dest}</span>
+      <span class="history-meta">${item.poiCount} lieu${item.poiCount > 1 ? 'x' : ''} · ${item.date}</span>
     </div>
   `).join('');
   list.querySelectorAll('.history-item').forEach(el => {
