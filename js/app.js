@@ -294,7 +294,7 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-5',
+        model: 'claude-sonnet-4-6',
         max_tokens: 4000,
         messages: [{ role: 'user', content: prompt }]
       })
@@ -708,7 +708,7 @@ Réponds de façon précise, courte (2-4 phrases max), en français, avec la voi
           'anthropic-dangerous-direct-browser-access': 'true'
         },
         body: JSON.stringify({
-          model: 'claude-opus-4-5',
+          model: 'claude-sonnet-4-6',
           max_tokens: 400,
           system: systemPrompt,
           messages: this.state.chatHistory
