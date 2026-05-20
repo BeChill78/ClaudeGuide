@@ -1039,9 +1039,8 @@ function bindSettings() {
 }
 
 function showSettingsScreen() {
-  const apiSection = document.getElementById('section-apikey');
-  if (apiSection) apiSection.style.display = S.guideMode === 'ai' ? '' : 'none';
   showScreen('screen-settings');
+  document.getElementById('section-apikey')?.scrollIntoView({ block: 'start' });
 }
 
 // ─── HOME BINDINGS ─────────────────────────────────────────────────────────────
