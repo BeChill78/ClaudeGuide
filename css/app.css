@@ -471,6 +471,40 @@ html, body {
   cursor: pointer;
 }
 
+/* Excursion GPS bar */
+.excursion-bar {
+  position: absolute;
+  bottom: 72px; left: 50%; transform: translateX(-50%);
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+.btn-excursion {
+  pointer-events: all;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 40px;
+  color: var(--text2);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-excursion.active {
+  background: rgba(201,169,110,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.excursion-status {
+  font-size: 12px;
+  color: var(--text2);
+  white-space: nowrap;
+}
+
 /* POI list strip */
 .poi-strip {
   position: absolute;

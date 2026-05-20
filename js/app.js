@@ -13,8 +13,10 @@ const App = {
     isPlaying: false,
     chatHistory: [],     // { role, content } for current poi
     watchId: null,
-    history: [],         // saved tours
+    history: [],
     voices: [],
+    excursionMode: false,
+    triggeredPois: new Set(),
   },
 
   // ============================================================
@@ -372,6 +374,10 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
     // Binder les boutons map
     this.bindMapControls();
 
+    // Réinitialiser l'état excursion
+    this.state.excursionMode = false;
+    this.state.triggeredPois = new Set();
+
     // Démarrer le GPS
     this.startGPS();
   },
@@ -465,6 +471,11 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
       this.showSettingsScreen();
     });
 
+    // Bouton mode excursion
+    document.getElementById('btn-excursion').addEventListener('click', () => {
+      this.toggleExcursionMode();
+    });
+
     // Bouton stop audio bar
     document.getElementById('btn-audio-stop').addEventListener('click', () => {
       this.stopAudio();
@@ -495,21 +506,57 @@ Réponds UNIQUEMENT avec un JSON valide, sans markdown, sans explication :
     const lng = pos.coords.longitude;
     this.state.userPosition = { lat, lng };
 
-    // Placer/déplacer le marqueur utilisateur
     if (!this.userMarker) {
       const el = document.createElement('div');
       el.className = 'user-marker';
       this.userMarker = L.marker([lat, lng], {
-        icon: L.divIcon({
-          html: el.outerHTML,
-          className: '',
-          iconSize: [18, 18],
-          iconAnchor: [9, 9],
-        }),
+        icon: L.divIcon({ html: el.outerHTML, className: '', iconSize: [18, 18], iconAnchor: [9, 9] }),
         zIndexOffset: 1000
       }).addTo(this.map);
     } else {
       this.userMarker.setLatLng([lat, lng]);
+    }
+
+    if (this.state.excursionMode) this.checkGeofences(lat, lng);
+  },
+
+  haversineMeters(lat1, lng1, lat2, lng2) {
+    const R = 6371000;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  },
+
+  checkGeofences(lat, lng) {
+    const pois = this.state.currentTour?.pois;
+    if (!pois) return;
+    pois.forEach((poi, i) => {
+      if (this.state.triggeredPois.has(i)) return;
+      if (!poi.lat || !poi.lng) return;
+      const dist = this.haversineMeters(lat, lng, poi.lat, poi.lng);
+      if (dist <= 40) {
+        this.state.triggeredPois.add(i);
+        poi.visited = true;
+        this.renderPoiStrip();
+        this.selectPOI(i);
+        this.playAudio(i);
+      }
+    });
+  },
+
+  toggleExcursionMode() {
+    this.state.excursionMode = !this.state.excursionMode;
+    const btn = document.getElementById('btn-excursion');
+    const status = document.getElementById('excursion-status');
+    if (this.state.excursionMode) {
+      btn.classList.add('active');
+      status.textContent = '📡 En attente du signal GPS…';
+    } else {
+      btn.classList.remove('active');
+      status.textContent = '';
+      this.stopAudio();
     }
   },
 
