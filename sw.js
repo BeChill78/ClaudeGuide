@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nomade-v1';
+const CACHE_NAME = 'nomade-v2';
 const STATIC = [
   '/',
   '/index.html',
