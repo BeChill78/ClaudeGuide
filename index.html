@@ -16,25 +16,19 @@
 </head>
 <body>
 
-<!-- TOAST -->
 <div id="toast" class="toast"></div>
 
-<!-- AUDIO BAR -->
 <div id="audio-bar" class="audio-bar">
   <div class="audio-waves">
-    <div class="audio-wave"></div>
-    <div class="audio-wave"></div>
-    <div class="audio-wave"></div>
-    <div class="audio-wave"></div>
+    <div class="audio-wave"></div><div class="audio-wave"></div>
+    <div class="audio-wave"></div><div class="audio-wave"></div>
     <div class="audio-wave"></div>
   </div>
-  <span id="audio-bar-name" style="flex:1; font-size:13px; color:var(--text);">En cours…</span>
+  <span id="audio-bar-name" style="flex:1;font-size:13px;color:var(--text)">En cours…</span>
   <button id="btn-audio-stop" class="btn-stop-audio">⏹</button>
 </div>
 
-<!-- ============================= -->
-<!-- ÉCRAN : ACCUEIL               -->
-<!-- ============================= -->
+<!-- ===== ACCUEIL ===== -->
 <div id="screen-home" class="screen active">
   <div class="home-hero">
     <span class="logo-glyph">◈</span>
@@ -42,116 +36,124 @@
     <p class="app-sub">Ton guide privé · Partout</p>
   </div>
 
-  <div class="home-form">
+  <div class="home-tabs">
+    <button class="tab-btn active" data-tab="form">Planifier</button>
+    <button class="tab-btn" data-tab="discover">Découvrir</button>
+  </div>
 
-    <!-- Réglages -->
-    <div style="display:flex; justify-content:flex-end; margin-bottom:-4px;">
-      <button id="btn-open-settings" class="btn-icon" style="background:transparent; border:none;">⚙️</button>
-    </div>
+  <div id="tab-form" class="tab-content active">
+    <div class="home-form">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:-4px">
+        <button id="btn-open-settings" class="btn-icon-text">⚙️ Réglages</button>
+      </div>
 
-    <!-- Destination -->
-    <div class="field">
-      <label>Destination</label>
-      <input type="text" id="input-destination" placeholder="Rome, Lisbonne, Kyoto…" autocomplete="off" inputmode="search">
-    </div>
+      <div class="field">
+        <label>Destination</label>
+        <input type="text" id="input-destination" placeholder="Rome, Lisbonne, Kyoto…" autocomplete="off" inputmode="search">
+      </div>
 
-    <!-- Durée -->
-    <div class="field">
-      <label>Durée de visite</label>
-      <div class="select-wrap">
-        <select id="input-duration">
-          <option value="1">1 heure</option>
-          <option value="2" selected>2 heures</option>
-          <option value="3">3 heures</option>
-          <option value="4">Demi-journée (4h)</option>
-          <option value="6">Journée complète (6h)</option>
-        </select>
+      <div class="field">
+        <label>Point de départ <span class="optional">optionnel</span></label>
+        <input type="text" id="input-start" placeholder="Adresse ou laisser vide pour utiliser ma position GPS" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label>Intérêts spécifiques <span class="optional">optionnel</span></label>
+        <input type="text" id="input-interests" placeholder="street art, Game of Thrones, cuisine végane…" autocomplete="off">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label>Durée</label>
+          <div class="select-wrap">
+            <select id="input-duration">
+              <option value="1">1 heure</option>
+              <option value="2" selected>2 heures</option>
+              <option value="3">3 heures</option>
+              <option value="4">Demi-journée (4h)</option>
+              <option value="6">Journée (6h)</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Départ</label>
+          <input type="datetime-local" id="input-departure">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Groupe</label>
+        <div class="toggle-row" id="group-btns">
+          <button class="toggle-btn active" data-val="solo">🧍 Solo</button>
+          <button class="toggle-btn" data-val="couple">👫 Couple</button>
+          <button class="toggle-btn" data-val="famille">👨‍👩‍👦 Famille</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Mode</label>
+        <div class="toggle-row" id="mode-btns">
+          <button class="toggle-btn active" data-val="urbain">🏙️ Visite urbaine</button>
+          <button class="toggle-btn" data-val="rando">🥾 Randonnée-Trek</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Thème</label>
+        <div class="theme-grid">
+          <button class="theme-btn active" data-theme="histoire"><span class="theme-icon">🏛️</span>Histoire & culture</button>
+          <button class="theme-btn" data-theme="gastro"><span class="theme-icon">🍷</span>Gastronomie locale</button>
+          <button class="theme-btn" data-theme="mixte"><span class="theme-icon">🗺️</span>Mixte</button>
+          <button class="theme-btn" data-theme="nature"><span class="theme-icon">🌿</span>Nature & points de vue</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Format audio</label>
+        <div class="toggle-row">
+          <button class="format-btn active" data-format="dense">⚡ Court & dense</button>
+          <button class="format-btn" data-format="narratif">📖 Narratif & détaillé</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Mode guide</label>
+        <div class="guide-mode-row">
+          <button class="guide-mode-btn" id="btn-mode-free" data-mode="free">🆓 Guide gratuit</button>
+          <button class="guide-mode-btn active" id="btn-mode-ai" data-mode="ai">✨ Guide IA</button>
+        </div>
+        <div id="guide-mode-hint" class="guide-mode-hint">Mode IA — génération personnalisée via Claude</div>
+      </div>
+
+      <button id="btn-generate" class="btn-generate">Générer ma visite →</button>
+
+      <div class="field" style="margin-top:8px">
+        <label>Visites précédentes</label>
+        <div id="history-list"></div>
       </div>
     </div>
+  </div>
 
-    <!-- Thème -->
-    <div class="field">
-      <label>Thème de la visite</label>
-      <div class="theme-grid">
-        <button class="theme-btn active" data-theme="histoire">
-          <span class="theme-icon">🏛️</span>
-          Histoire & culture
-        </button>
-        <button class="theme-btn" data-theme="gastro">
-          <span class="theme-icon">🍷</span>
-          Gastronomie locale
-        </button>
-        <button class="theme-btn" data-theme="mixte">
-          <span class="theme-icon">🗺️</span>
-          Mixte
-        </button>
-        <button class="theme-btn" data-theme="nature">
-          <span class="theme-icon">🌿</span>
-          Nature & points de vue
-        </button>
-      </div>
-    </div>
-
-    <!-- Format audio -->
-    <div class="field">
-      <label>Format du guide audio</label>
-      <div class="format-row">
-        <button class="format-btn active" data-format="dense">
-          ⚡ Court & dense
-        </button>
-        <button class="format-btn" data-format="narratif">
-          📖 Narratif & détaillé
-        </button>
-      </div>
-    </div>
-
-    <!-- CTA -->
-    <button id="btn-generate" class="btn-generate">
-      Générer ma visite →
-    </button>
-
-    <!-- Historique -->
-    <div class="field" style="margin-top:8px;">
-      <label>Visites précédentes</label>
-      <div id="history-list"></div>
-    </div>
-
+  <div id="tab-discover" class="tab-content">
+    <div id="circuits-list" class="circuits-list"></div>
   </div>
 </div>
 
-<!-- ============================= -->
-<!-- ÉCRAN : CHARGEMENT            -->
-<!-- ============================= -->
+<!-- ===== CHARGEMENT ===== -->
 <div id="screen-loading" class="screen">
   <div class="loading-glyph">◈</div>
-  <div class="loading-title">Préparation de ta visite</div>
-  <div class="loading-sub">Claude analyse la destination et sélectionne les meilleurs lieux</div>
-  <div class="loading-steps">
-    <div class="loading-step" id="step-0">
-      <div class="step-dot"></div>
-      <span>Localisation de la destination</span>
-    </div>
-    <div class="loading-step" id="step-1">
-      <div class="step-dot"></div>
-      <span>Sélection des points d'intérêt</span>
-    </div>
-    <div class="loading-step" id="step-2">
-      <div class="step-dot"></div>
-      <span>Géolocalisation des lieux</span>
-    </div>
-    <div class="loading-step" id="step-3">
-      <div class="step-dot"></div>
-      <span>Préparation de la carte</span>
-    </div>
+  <div class="loading-title" id="loading-title">Préparation de ta visite</div>
+  <div class="loading-sub" id="loading-sub">Claude analyse la destination et sélectionne les meilleurs lieux</div>
+  <div class="loading-steps" id="loading-steps">
+    <div class="loading-step" id="step-0"><div class="step-dot"></div><span>Localisation de la destination</span></div>
+    <div class="loading-step" id="step-1"><div class="step-dot"></div><span>Sélection des points d'intérêt</span></div>
+    <div class="loading-step" id="step-2"><div class="step-dot"></div><span>Géolocalisation des lieux</span></div>
+    <div class="loading-step" id="step-3"><div class="step-dot"></div><span>Préparation de la carte</span></div>
   </div>
 </div>
 
-<!-- ============================= -->
-<!-- ÉCRAN : CARTE                 -->
-<!-- ============================= -->
+<!-- ===== CARTE ===== -->
 <div id="screen-map" class="screen">
-
-  <!-- Top bar -->
   <div class="map-topbar">
     <button id="btn-map-home" class="btn-icon">←</button>
     <div class="map-title">
@@ -162,32 +164,28 @@
     <button id="btn-map-settings" class="btn-icon">⚙️</button>
   </div>
 
-  <!-- Carte Leaflet -->
+  <div id="progress-wrap" class="progress-wrap" style="display:none">
+    <div class="progress-label"><span id="progress-text">Stop 0 / 0</span></div>
+    <div class="progress-track"><div id="progress-fill" class="progress-fill"></div></div>
+  </div>
+
   <div id="map"></div>
 
-  <!-- Barre mode excursion GPS -->
   <div id="excursion-bar" class="excursion-bar">
     <button id="btn-excursion" class="btn-excursion">📍 Mode Excursion GPS</button>
     <span id="excursion-status" class="excursion-status"></span>
   </div>
 
-  <!-- Strip des POI (visible quand sheet fermée) -->
   <div id="poi-strip" class="poi-strip"></div>
 
-  <!-- Sheet POI -->
   <div id="poi-sheet" class="poi-sheet">
     <div class="sheet-handle"></div>
-    <button id="btn-close-sheet" style="position:absolute; top:16px; right:16px; background:none; border:none; color:var(--text2); font-size:22px; cursor:pointer;">✕</button>
-    <div class="sheet-scroll">
-      <div id="poi-sheet-content"></div>
-    </div>
+    <button id="btn-close-sheet" class="btn-close-sheet">✕</button>
+    <div class="sheet-scroll"><div id="poi-sheet-content"></div></div>
   </div>
-
 </div>
 
-<!-- ============================= -->
-<!-- ÉCRAN : CHAT                  -->
-<!-- ============================= -->
+<!-- ===== CHAT ===== -->
 <div id="screen-chat" class="screen">
   <div class="chat-header">
     <span id="chat-back" class="chat-back">←</span>
@@ -203,24 +201,18 @@
   </div>
 </div>
 
-<!-- ============================= -->
-<!-- ÉCRAN : RÉGLAGES              -->
-<!-- ============================= -->
+<!-- ===== RÉGLAGES ===== -->
 <div id="screen-settings" class="screen">
   <div class="settings-header">
     <span id="btn-settings-back" class="settings-back">←</span>
     <h2 class="settings-title">Réglages</h2>
   </div>
-
   <div class="settings-body">
 
-    <div class="settings-section">
+    <div class="settings-section" id="section-apikey">
       <h3>Clé API Claude (Anthropic)</h3>
       <div class="settings-item">
-        <label>
-          Obtiens ta clé sur <strong>console.anthropic.com</strong> → API Keys.
-          Elle est stockée uniquement sur ton appareil.
-        </label>
+        <label>Obtiens ta clé sur <strong>console.anthropic.com</strong> → API Keys. Stockée uniquement sur ton appareil.</label>
         <input type="password" id="input-api-key" placeholder="sk-ant-api03-…" autocomplete="off">
         <div id="key-status" class="key-status missing">Clé API manquante</div>
         <button id="btn-save-key" class="btn-save">Sauvegarder la clé</button>
@@ -228,36 +220,41 @@
     </div>
 
     <div class="settings-section">
-      <h3>Coût estimé</h3>
+      <h3>Style du guide</h3>
       <div class="settings-item">
-        <label>
-          • Génération d'une visite (5-8 lieux) : ~0,02–0,05 €<br>
-          • Chat avec le guide (par échange) : ~0,001 €<br>
-          • Voix : gratuite (navigateur Web Speech API)<br><br>
-          <strong>Une journée de visite complète ≈ 0,10 €</strong>
-        </label>
+        <div class="toggle-row">
+          <button class="style-btn active" data-style="expert">⚡ Expert</button>
+          <button class="style-btn" data-style="narrateur">📖 Narrateur</button>
+          <button class="style-btn" data-style="passionne">🎭 Passionné</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <h3>Coût estimé (mode IA)</h3>
+      <div class="settings-item">
+        <label>• Génération d'une visite (5-8 lieux) : ~0,02–0,05 €<br>• Chat avec le guide (par échange) : ~0,001 €<br>• Voix : gratuite (Web Speech API)<br><br><strong>Une journée complète ≈ 0,10 €</strong></label>
+      </div>
+    </div>
+
+    <div class="settings-section" id="section-free-destinations">
+      <h3>Mode gratuit — 50 destinations européennes</h3>
+      <div class="settings-item">
+        <div id="free-dest-list" class="free-dest-list"></div>
       </div>
     </div>
 
     <div class="settings-section">
       <h3>Historique</h3>
-      <button id="btn-clear-history" class="btn-save" style="background:var(--bg3); color:var(--text2); border:1px solid var(--border);">
-        Effacer l'historique
-      </button>
+      <button id="btn-clear-history" class="btn-save" style="background:var(--bg3);color:var(--text2);border:1px solid var(--border)">Effacer l'historique</button>
     </div>
 
     <div class="settings-section">
       <h3>Installer l'application</h3>
       <div class="settings-item">
-        <label>
-          <strong>Android (Chrome)</strong><br>
-          Menu ⋮ → "Ajouter à l'écran d'accueil"<br><br>
-          <strong>iPhone (Safari)</strong><br>
-          Partager → "Sur l'écran d'accueil"
-        </label>
+        <label><strong>Android (Chrome)</strong><br>Menu ⋮ → "Ajouter à l'écran d'accueil"<br><br><strong>iPhone (Safari)</strong><br>Partager → "Sur l'écran d'accueil"</label>
       </div>
     </div>
-
   </div>
 </div>
 
