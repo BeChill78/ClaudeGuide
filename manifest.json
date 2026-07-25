@@ -2,23 +2,37 @@
   "name": "Nomade — Guide de voyage IA",
   "short_name": "Nomade",
   "description": "Guide de voyage IA personnel en français",
-  "start_url": "/",
+  "id": "/ClaudeGuide/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#0a0a0a",
+  "background_color": "#e9e0cd",
+  "theme_color": "#e9e0cd",
   "orientation": "portrait",
   "icons": [
     {
       "src": "icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
       "src": "icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ],
-  "categories": ["travel", "navigation"],
-  "lang": "fr"
+  "categories": [
+    "travel",
+    "navigation"
+  ],
+  "lang": "fr",
+  "dir": "ltr"
 }
