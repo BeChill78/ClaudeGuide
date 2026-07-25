@@ -471,9 +471,9 @@ async function generateAI(dest) {
     setStep(1);
     const q = S.startPoint || dest;
     const res = await fetch(
-      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`,
-      { headers: { 'User-Agent': 'Nomade-PWA/1.0' } }
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=fr`
     );
+    if (!res.ok) throw new Error('Nominatim ' + res.status);
     const data = await res.json();
     if (data.length) { centerLat = parseFloat(data[0].lat); centerLng = parseFloat(data[0].lon); }
   } catch (e) { console.warn('Geocode failed', e); }
@@ -502,9 +502,9 @@ async function generateAI(dest) {
     try {
       await delay(1100);
       const r = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.name + ', ' + dest)}&format=json&limit=1`,
-        { headers: { 'User-Agent': 'Nomade-PWA/1.0' } }
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(p.name + ', ' + dest)}&format=json&limit=1&accept-language=fr`
       );
+      if (!r.ok) throw new Error('Nominatim ' + r.status);
       const d = await r.json();
       if (d.length) { p.lat = parseFloat(d[0].lat); p.lng = parseFloat(d[0].lon); }
     } catch (e) { console.warn('POI geocode failed', e); }
@@ -584,7 +584,7 @@ async function callClaude(prompt) {
       'anthropic-dangerous-direct-browser-access': 'true',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5',
+      model: 'claude-sonnet-5',
       max_tokens: 8000,
       messages: [{ role: 'user', content: prompt }],
     }),
@@ -664,9 +664,9 @@ function renderMarkers() {
 function drawPolyline() {
   const latlngs = S.pois.map(p => [p.lat, p.lng]);
   S.polyline = L.polyline(latlngs, {
-    color: '#c9a96e',
-    weight: 2.5,
-    opacity: 0.8,
+    color: '#b5502e',
+    weight: 3,
+    opacity: 0.85,
     dashArray: '6, 8',
   }).addTo(S.map);
   S.map.fitBounds(S.polyline.getBounds(), { padding: [48, 48] });
@@ -906,7 +906,7 @@ Réponds en français, de façon concise (max 150 mots).`;
         'anthropic-dangerous-direct-browser-access': 'true',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
+        model: 'claude-sonnet-5',
         max_tokens: 512,
         system,
         messages: S.chatHistory.slice(-8),
@@ -1188,7 +1188,7 @@ function init() {
   renderCircuits();
 
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(e => console.warn('SW:', e));
+    navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
   }
 }
 
